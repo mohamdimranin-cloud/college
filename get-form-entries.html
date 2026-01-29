@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Google Form Entry IDs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #6366f1;
+        }
+        .step {
+            background: #f0f9ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #6366f1;
+            border-radius: 5px;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .result {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        code {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            display: block;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .copy-btn {
+            background: #10b981;
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+        .copy-btn:hover {
+            background: #059669;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #e5e7eb;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Get Google Form Entry IDs</h1>
+        
+        <div class="step">
+            <h3>Step 1: Load Your Form</h3>
+            <p>Click the button below to load your Google Form in the frame:</p>
+            <button onclick="loadForm()">Load Form</button>
+        </div>
+
+        <div id="formFrame" style="display:none;">
+            <iframe id="googleForm" src=""></iframe>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Extract Entry IDs</h3>
+            <p>After the form loads, click this button to extract the entry IDs:</p>
+            <button onclick="extractEntries()">Extract Entry IDs</button>
+        </div>
+
+        <div id="result" class="result">
+            <h3>✅ Entry IDs Found!</h3>
+            <p>Copy these values and send them to complete the setup:</p>
+            <code id="entryIds"></code>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+        </div>
+
+        <div class="step">
+            <h3>Alternative Method (Manual)</h3>
+            <p>If the automatic method doesn't work:</p>
+            <ol>
+                <li>Open your form: <a href="https://docs.google.com/forms/d/e/1FAIpQLSeAHjqOcR2RP9pN2E-n7dO9bl6kbXNI4DvkcRtEPaQfRROYzA/viewform" target="_blank">Click Here</a></li>
+                <li>Right-click on the <strong>Name</strong> input field</li>
+                <li>Select "Inspect" or "Inspect Element"</li>
+                <li>Look for: <code style="display:inline; padding:2px 5px; background:#f3f4f6;">name="entry.XXXXXXXXX"</code></li>
+                <li>Copy the number after "entry."</li>
+                <li>Repeat for Email, Phone, and Message fields</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeAHjqOcR2RP9pN2E-n7dO9bl6kbXNI4DvkcRtEPaQfRROYzA/viewform';
+
+        function loadForm() {
+            document.getElementById('formFrame').style.display = 'block';
+            document.getElementById('googleForm').src = FORM_URL;
+            alert('Form loaded! Wait a few seconds for it to fully load, then click "Extract Entry IDs"');
+        }
+
+        function extractEntries() {
+            // Open form in new window to inspect
+            const newWindow = window.open(FORM_URL, '_blank');
+            
+            setTimeout(() => {
+                alert('Instructions:\n\n1. In the new window that opened, press F12 (or right-click → Inspect)\n2. Go to the "Console" tab\n3. Paste this code and press Enter:\n\nArray.from(document.querySelectorAll(\'input[name^="entry."]\'))\n  .map(input => input.name)\n  .join(\'\\n\')\n\n4. Copy the results and send them to me!');
+            }, 1000);
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('entryIds').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard! Send this to complete the setup.');
+            });
+        }
+
+        // Simpler approach - just provide instructions
+        window.onload = function() {
+            console.log('%c🎯 Quick Method to Get Entry IDs:', 'font-size: 16px; font-weight: bold; color: #6366f1;');
+            console.log('%c1. Open your form in a new tab', 'font-size: 14px;');
+            console.log('%c2. Open Developer Console (F12)', 'font-size: 14px;');
+            console.log('%c3. Paste this code:', 'font-size: 14px;');
+            console.log('%cArray.from(document.querySelectorAll(\'input[name^="entry."]\'))\n  .map(input => `${input.getAttribute("aria-label") || "Field"}: ${input.name}`)\n  .join("\\n")', 'background: #1f2937; color: #10b981; padding: 10px; border-radius: 5px;');
+        };
+    </script>
+</body>
+</html>
