@@ -748,3 +748,102 @@ document.head.appendChild(progressStyle);
 console.log('%c✨ All features loaded successfully!', 'font-size: 14px; color: #10b981; font-weight: bold;');
 console.log('%c📱 Website is fully responsive and optimized', 'font-size: 12px; color: #6366f1;');
 console.log('%c🚀 Performance: Excellent', 'font-size: 12px; color: #f59e0b;');
+
+
+// Slideshow functionality
+let slideIndex = 0;
+let slideInterval;
+
+function showSlides() {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    
+    if (slides.length === 0) return;
+    
+    // Hide all slides
+    slides.forEach(slide => {
+        slide.classList.remove('active');
+    });
+    
+    // Remove active class from all dots
+    dots.forEach(dot => {
+        dot.classList.remove('active');
+    });
+    
+    // Increment slide index
+    slideIndex++;
+    if (slideIndex > slides.length) {
+        slideIndex = 1;
+    }
+    
+    // Show current slide
+    slides[slideIndex - 1].classList.add('active');
+    
+    // Update dot if exists
+    const dotIndex = Math.ceil(slideIndex / (slides.length / dots.length)) - 1;
+    if (dots[dotIndex]) {
+        dots[dotIndex].classList.add('active');
+    }
+}
+
+function changeSlide(n) {
+    clearInterval(slideInterval);
+    const slides = document.querySelectorAll('.slide');
+    slideIndex += n;
+    
+    if (slideIndex > slides.length) {
+        slideIndex = 1;
+    }
+    if (slideIndex < 1) {
+        slideIndex = slides.length;
+    }
+    
+    slides.forEach(slide => slide.classList.remove('active'));
+    slides[slideIndex - 1].classList.add('active');
+    
+    // Restart auto-slide
+    slideInterval = setInterval(showSlides, 3000);
+}
+
+function currentSlide(n) {
+    clearInterval(slideInterval);
+    const slides = document.querySelectorAll('.slide');
+    const slidesPerDot = Math.ceil(slides.length / document.querySelectorAll('.dot').length);
+    slideIndex = (n - 1) * slidesPerDot + 1;
+    
+    slides.forEach(slide => slide.classList.remove('active'));
+    slides[slideIndex - 1].classList.add('active');
+    
+    // Update dots
+    document.querySelectorAll('.dot').forEach((dot, index) => {
+        dot.classList.remove('active');
+        if (index === n - 1) {
+            dot.classList.add('active');
+        }
+    });
+    
+    // Restart auto-slide
+    slideInterval = setInterval(showSlides, 3000);
+}
+
+// Initialize slideshow when page loads
+window.addEventListener('load', () => {
+    const slides = document.querySelectorAll('.slide');
+    if (slides.length > 0) {
+        slides[0].classList.add('active');
+        document.querySelectorAll('.dot')[0]?.classList.add('active');
+        slideInterval = setInterval(showSlides, 3000); // Change image every 3 seconds
+    }
+});
+
+// Pause slideshow when user hovers over it
+const slideshowContainer = document.querySelector('.slideshow-container');
+if (slideshowContainer) {
+    slideshowContainer.addEventListener('mouseenter', () => {
+        clearInterval(slideInterval);
+    });
+    
+    slideshowContainer.addEventListener('mouseleave', () => {
+        slideInterval = setInterval(showSlides, 3000);
+    });
+}
